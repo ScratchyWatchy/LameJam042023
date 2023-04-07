@@ -11,6 +11,7 @@ public class DiegeticReticle : MonoBehaviour
    [SerializeField] private GameObject reticleNotHittableGO;
    
    
+   
    [SerializeField] private Grapple grappleScript;
    [SerializeField] private float maxHookDistance = 50f;
    [SerializeField] private Transform cameraTransform;
@@ -49,7 +50,8 @@ public class DiegeticReticle : MonoBehaviour
       else if (!hittingSomething)
       {
          reticleHittableGO.SetActive(false);
-         reticleNotHittableGO.SetActive(false);
+         reticleNotHittable.position = cameraTransform.position + cameraTransform.forward * maxHookDistance;
+         reticleNotHittableGO.SetActive(true);
       }
 
    }
@@ -61,9 +63,13 @@ public class DiegeticReticle : MonoBehaviour
       if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, Mathf.Infinity, collidableLayers))
       {
          hittingSomething = true;
-         reticlePosition = hit.point;
+         if (Vector3.Distance(cameraTransform.position, hit.point) > maxHookDistance)
+         {
+            reticlePosition = cameraTransform.position + cameraTransform.forward * maxHookDistance;
+         }
+         else reticlePosition = hit.point;
          //On hookable layer
-         if ((((1 << hit.transform.gameObject.layer) & hookableLayers) != 0) && Vector3.Distance(transform.position, hit.point) < maxHookDistance)
+         if ((((1 << hit.transform.gameObject.layer) & hookableLayers) != 0) && Vector3.Distance(cameraTransform.position, hit.point) < maxHookDistance)
          {
             canHook = true;
             return;
@@ -74,4 +80,6 @@ public class DiegeticReticle : MonoBehaviour
 
       hittingSomething = false;
    }
+
+  
 }

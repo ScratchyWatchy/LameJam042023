@@ -4,18 +4,20 @@ using UnityEngine;
 public class FPSController : MonoBehaviour
 {
     [SerializeField] private float movementSpeed = 5f;
+    [SerializeField] private float maxVelocityChange = 10f;
+    [SerializeField] private float maxVelocityChangeInAir = 10f;
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private float mouseSensitivity = 100f;
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private float maxCameraAngle = 90f;
     [SerializeField] private float minCameraAngle = -90f;
+    [SerializeField] private float downForce = -9f;
     
-    [SerializeField] private float acceleration = 0.2f;
-    [SerializeField] private float deceleration = 0.2f;
     
+
     [SerializeField] private float cashJumpTime = 0.3f;
-    
-    [SerializeField] private LayerMask groundLayers;
+
+    [SerializeField] private float groundCheckDistance = 0.2f;
 
     private Rigidbody rb;
     public bool isGrounded;
@@ -36,18 +38,50 @@ public class FPSController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Movement
+        RaycastHit hitInfo;
+        
+        Debug.DrawLine(transform.position, transform.position + -Vector3.up * groundCheckDistance);
+        if (Physics.Raycast(transform.position + Vector3.up * 0.1f, -Vector3.up, out hitInfo, groundCheckDistance))
+        {
+            isGrounded = true;
+            if (Time.time - lastJumpInputTime < cashJumpTime)
+            {
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                isGrounded = false;
+            }
+        }
+        else
+        {
+            isGrounded = false;
+        }
+        
+        
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        // Target velocity based on input and max speed
-        targetVelocity = new Vector3(horizontal, 0f, vertical) * movementSpeed;
+        Vector3 movement = transform.right * horizontal + transform.forward * vertical;
+        movement.y = 0f;
 
-        // Smoothly accelerate or decelerate towards target velocity
-        currentVelocity = Vector3.Lerp(currentVelocity, targetVelocity, targetVelocity.magnitude > currentVelocity.magnitude ? acceleration : deceleration);
+        if (movement.magnitude > 1f)
+        {
+            movement = movement.normalized;
+        }
 
-        // Move the rigidbody with the current velocity
-        rb.MovePosition(transform.position + transform.TransformDirection(currentVelocity * Time.fixedDeltaTime));
+        
+        Vector3 targetVelocity = movement * movementSpeed;
+        Vector3 velocity = rb.velocity;
+        Vector3 velocityChange = targetVelocity - velocity;
+        if (velocity.magnitude < targetVelocity.magnitude)
+        {
+            velocityChange.x = Mathf.Clamp(velocityChange.x, isGrounded ? -maxVelocityChange : -maxVelocityChangeInAir, isGrounded ? maxVelocityChange : maxVelocityChangeInAir);
+            velocityChange.z = Mathf.Clamp(velocityChange.z, isGrounded ? -maxVelocityChange : -maxVelocityChangeInAir, isGrounded ? maxVelocityChange : maxVelocityChangeInAir);
+            velocityChange.y = 0f;
+
+            rb.AddForce(velocityChange, ForceMode.VelocityChange);
+        }
+
+        rb.AddForce(-Vector3.up * downForce);
+
 
 
         // Jumping
@@ -71,18 +105,5 @@ public class FPSController : MonoBehaviour
         cameraTransform.localRotation = Quaternion.Euler(cameraRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
     }
-
-    private void OnTriggerEnter(Collider collider)
-    {
-        if (((1 << collider.gameObject.layer) & groundLayers) != 0)
-        {
-            isGrounded = true;
-            if (Time.time - lastJumpInputTime < cashJumpTime)
-            {
-                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                isGrounded = false;
-                lastJumpInputTime = 0f;
-            }
-        }
-    }
+    
 }

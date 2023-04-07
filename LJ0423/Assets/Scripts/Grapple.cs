@@ -12,9 +12,13 @@ public class Grapple : MonoBehaviour
     [SerializeField] private LayerMask hookableLayers;
     [SerializeField] private LayerMask collidableLayers;
     [SerializeField] private float slowDownRate = 0.1f;
+    [SerializeField] private LineRenderer lineRenderer;
     
     private Rigidbody rb;
     private FPSController _fpsController;
+
+    private GameObject hookedGO;
+    
     public Vector3 hookPosition;
     public bool isHooked = false;
 
@@ -41,6 +45,8 @@ public class Grapple : MonoBehaviour
 
         if (isHooked)
         {
+            if (!hookedGO.activeSelf) DisconnectHook();
+            DrawHook();
             PullTowardsHook();
         }
     }
@@ -59,9 +65,11 @@ public class Grapple : MonoBehaviour
         if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, maxHookDistance, collidableLayers))
         {
             if (!(((1 << hit.transform.gameObject.layer) & hookableLayers) != 0)) return;
+            hookedGO = hit.transform.gameObject;
             hookPosition = hit.point;
             PullTowardsHook(true);
             isHooked = true;
+            lineRenderer.enabled = true;
             //PullTowardsHook();
         }
 
@@ -71,11 +79,19 @@ public class Grapple : MonoBehaviour
     {
         Vector3 hookDirection = (hookPosition - transform.position).normalized;
         rb.AddForce(hookDirection * hookSpeed * (doubleTheForce ? 2f : 1f));
+        rb.AddForce(transform.up * hookSpeed * 0.6f);
     }
 
-    private void DisconnectHook()
+    public void DisconnectHook()
     {
         isHooked = false;
+        lineRenderer.enabled = false;
+    }
+    
+    private void DrawHook()
+    {
+        lineRenderer.SetPosition(0, lineRenderer.transform.position);
+        lineRenderer.SetPosition(1, hookPosition);
     }
 }
 
