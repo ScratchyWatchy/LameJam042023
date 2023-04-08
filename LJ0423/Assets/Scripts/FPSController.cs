@@ -25,6 +25,9 @@ public class FPSController : MonoBehaviour
     private float lastJumpInputTime = 0f;
     private Vector3 currentVelocity;
     private Vector3 targetVelocity;
+
+    private bool addExtraForce = false;
+    private Vector3 extraForce = new Vector3();
     
 
     private void Awake()
@@ -39,7 +42,7 @@ public class FPSController : MonoBehaviour
     private void FixedUpdate()
     {
         RaycastHit hitInfo;
-        
+
         Debug.DrawLine(transform.position, transform.position + -Vector3.up * groundCheckDistance);
         if (Physics.Raycast(transform.position + Vector3.up * 0.1f, -Vector3.up, out hitInfo, groundCheckDistance))
         {
@@ -54,8 +57,8 @@ public class FPSController : MonoBehaviour
         {
             isGrounded = false;
         }
-        
-        
+
+
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
@@ -67,20 +70,26 @@ public class FPSController : MonoBehaviour
             movement = movement.normalized;
         }
 
-        
+
         Vector3 targetVelocity = movement * movementSpeed;
         Vector3 velocity = rb.velocity;
         Vector3 velocityChange = targetVelocity - velocity;
-        if (velocity.magnitude < targetVelocity.magnitude)
-        {
-            velocityChange.x = Mathf.Clamp(velocityChange.x, isGrounded ? -maxVelocityChange : -maxVelocityChangeInAir, isGrounded ? maxVelocityChange : maxVelocityChangeInAir);
-            velocityChange.z = Mathf.Clamp(velocityChange.z, isGrounded ? -maxVelocityChange : -maxVelocityChangeInAir, isGrounded ? maxVelocityChange : maxVelocityChangeInAir);
-            velocityChange.y = 0f;
 
-            rb.AddForce(velocityChange, ForceMode.VelocityChange);
-        }
+        velocityChange.x = Mathf.Clamp(velocityChange.x, isGrounded ? -maxVelocityChange : -maxVelocityChangeInAir,
+            isGrounded ? maxVelocityChange : maxVelocityChangeInAir);
+        velocityChange.z = Mathf.Clamp(velocityChange.z, isGrounded ? -maxVelocityChange : -maxVelocityChangeInAir,
+            isGrounded ? maxVelocityChange : maxVelocityChangeInAir);
+        velocityChange.y = 0f;
+
+        rb.AddForce(velocityChange, ForceMode.VelocityChange);
 
         rb.AddForce(-Vector3.up * downForce);
+
+        if (addExtraForce)
+        {
+            rb.AddForce(extraForce);
+            addExtraForce = false;
+        }
 
 
 
@@ -105,5 +114,11 @@ public class FPSController : MonoBehaviour
         cameraTransform.localRotation = Quaternion.Euler(cameraRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
     }
-    
+
+    public void AddExtraForce(Vector3 force)
+    {
+        addExtraForce = true;
+        extraForce = force;
+    }
+
 }

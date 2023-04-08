@@ -78,8 +78,15 @@ public class Grapple : MonoBehaviour
     private void PullTowardsHook(bool doubleTheForce = false)
     {
         Vector3 hookDirection = (hookPosition - transform.position).normalized;
-        rb.AddForce(hookDirection * hookSpeed * (doubleTheForce ? 2f : 1f));
-        rb.AddForce(transform.up * hookSpeed * 0.6f);
+        //rb.AddForce(hookDirection * hookSpeed * (doubleTheForce ? 2f : 1f));
+        //rb.AddForce(transform.up * hookSpeed * 0.6f);
+
+        Vector3 forceVector = hookDirection * hookSpeed * (doubleTheForce ? 3f : 1f);
+        
+        forceVector = new Vector3(forceVector.x, forceVector.y * 0.425f, forceVector.z);
+        
+        _fpsController.AddExtraForce(forceVector);
+        
     }
 
     public void DisconnectHook()

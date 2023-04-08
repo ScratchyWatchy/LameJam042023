@@ -10,6 +10,10 @@ public class DiegeticReticle : MonoBehaviour
    [SerializeField] private GameObject reticleHittableGO;
    [SerializeField] private GameObject reticleNotHittableGO;
    
+   public float minSize = 1f;
+   public float maxSize = 5f;
+   public float distanceScalingFactor = 1f;
+   
    
    
    [SerializeField] private Grapple grappleScript;
@@ -22,11 +26,13 @@ public class DiegeticReticle : MonoBehaviour
    private bool hittingSomething = false;
    private bool canHook = true;
    private Vector3 reticlePosition;
+   private float originalSize;
 
    private void Start()
    {
       reticleHittableGO.SetActive(false);
       reticleNotHittableGO.SetActive(false);
+      originalSize = reticleHittable.localScale.magnitude;
    }
 
    private void Update()
@@ -54,6 +60,11 @@ public class DiegeticReticle : MonoBehaviour
          reticleNotHittableGO.SetActive(true);
       }
 
+      var distanceToReticle = Vector3.Distance(cameraTransform.position, reticlePosition);
+      
+      float size = Mathf.Clamp(originalSize + (distanceToReticle * distanceScalingFactor), minSize, maxSize);
+      reticleNotHittable.localScale = new Vector3(size, size, size);
+      reticleHittable.localScale = new Vector3(size, size, size);
    }
 
    private void GetReticlePosition()

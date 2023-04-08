@@ -2506,7 +2506,7 @@ MonoBehaviour:
   movementSpeed: 25
   maxVelocityChange: 20
   maxVelocityChangeInAir: 5
-  jumpForce: 8.4
+  jumpForce: 23
   mouseSensitivity: 100
   cameraTransform: {fileID: 156175244}
   maxCameraAngle: 85
@@ -2514,7 +2514,7 @@ MonoBehaviour:
   downForce: 28.5
   cashJumpTime: 0.45
   groundCheckDistance: 0.1
-  isGrounded: 0
+  isGrounded: 1
 --- !u!54 &881262303
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2575,7 +2575,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7193271e70fb3e745ae3ed357bd79514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hookSpeed: 38
+  hookSpeed: 200
   maxHookDistance: 30
   cameraTransform: {fileID: 156175244}
   hookableLayers:
@@ -2604,6 +2604,9 @@ MonoBehaviour:
   reticleNotHittable: {fileID: 908673678}
   reticleHittableGO: {fileID: 1862170039}
   reticleNotHittableGO: {fileID: 908673674}
+  minSize: 0.05
+  maxSize: 1
+  distanceScalingFactor: 0.15
   grappleScript: {fileID: 881262307}
   maxHookDistance: 30
   cameraTransform: {fileID: 156175244}
@@ -2612,7 +2615,7 @@ MonoBehaviour:
     m_Bits: 128
   collidableLayers:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 193
 --- !u!114 &881262309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2666,27 +2669,13 @@ GameObject:
   - component: {fileID: 908673678}
   - component: {fileID: 908673677}
   - component: {fileID: 908673676}
-  - component: {fileID: 908673675}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SphereRed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!135 &908673675
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 908673674}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &908673676
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4888,7 +4877,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1855044215}
   m_Material: {fileID: 13400000, guid: e6ae793e6cd46bd4f8a84f0fdb1ec672, type: 2}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -4982,27 +4971,13 @@ GameObject:
   - component: {fileID: 1862170043}
   - component: {fileID: 1862170042}
   - component: {fileID: 1862170041}
-  - component: {fileID: 1862170040}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SphereGreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!135 &1862170040
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1862170039}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1862170041
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5062,7 +5037,7 @@ Transform:
   m_GameObject: {fileID: 1862170039}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.48, y: 1.47, z: 4.73}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 0.001, y: 0.001, z: 0.001}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
