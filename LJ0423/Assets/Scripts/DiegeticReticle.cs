@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DiegeticReticle : MonoBehaviour
@@ -70,23 +71,34 @@ public class DiegeticReticle : MonoBehaviour
    private void GetReticlePosition()
    {
       RaycastHit hit;
+      
+      var hits = Physics.RaycastAll(cameraTransform.position, cameraTransform.forward, collidableLayers).ToList();
 
-      if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, Mathf.Infinity, collidableLayers))
+      hits = hits.OrderBy(x => Vector3.Distance(cameraTransform.position, x.point)).ToList();
+
+      hits = hits.Where(x => x.transform.gameObject.activeSelf).ToList();
+
+      if (hits.Count != 0)
       {
          hittingSomething = true;
-         if (Vector3.Distance(cameraTransform.position, hit.point) > maxHookDistance)
+         if (Vector3.Distance(cameraTransform.position, hits[0].point) > maxHookDistance)
          {
             reticlePosition = cameraTransform.position + cameraTransform.forward * maxHookDistance;
          }
-         else reticlePosition = hit.point;
+         else reticlePosition = hits[0].point;
          //On hookable layer
-         if ((((1 << hit.transform.gameObject.layer) & hookableLayers) != 0) && Vector3.Distance(cameraTransform.position, hit.point) < maxHookDistance)
+         if ((((1 << hits[0].transform.gameObject.layer) & hookableLayers) != 0) && Vector3.Distance(cameraTransform.position, hits[0].point) < maxHookDistance)
          {
             canHook = true;
             return;
          }
          canHook = false;
          return;
+      }
+
+      if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, Mathf.Infinity, collidableLayers))
+      {
+         
       }
 
       hittingSomething = false;

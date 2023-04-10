@@ -49,8 +49,8 @@ public class FPSController : MonoBehaviour
             isGrounded = true;
             if (Time.time - lastJumpInputTime < cashJumpTime)
             {
-                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                isGrounded = false;
+                //rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                //isGrounded = false;
             }
         }
         else
@@ -96,7 +96,7 @@ public class FPSController : MonoBehaviour
         // Jumping
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            //rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;
         }
         else if (Input.GetButtonDown("Jump") && !isGrounded)
@@ -119,6 +119,11 @@ public class FPSController : MonoBehaviour
     {
         addExtraForce = true;
         extraForce = force;
+    }
+
+    public void SetMaxVelocity(float newSpeed)
+    {
+        movementSpeed = newSpeed;
     }
 
 }

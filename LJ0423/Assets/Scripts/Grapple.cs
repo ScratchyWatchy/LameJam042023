@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -62,11 +63,21 @@ public class Grapple : MonoBehaviour
         
         Debug.DrawLine(cameraTransform.position, cameraTransform.position + cameraTransform.forward * maxHookDistance);
 
-        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, maxHookDistance, collidableLayers))
+
+        var hits = Physics.RaycastAll(cameraTransform.position, cameraTransform.forward, collidableLayers).ToList();
+
+        hits = hits.OrderBy(x => Vector3.Distance(cameraTransform.position, x.point)).ToList();
+        
+        
+        hits = hits.Where(x => x.transform.gameObject.activeSelf).ToList();
+
+        hits = hits.Where(x => Vector3.Distance(cameraTransform.position, x.point) <= maxHookDistance).ToList();
+            
+        if (hits.Count != 0)
         {
-            if (!(((1 << hit.transform.gameObject.layer) & hookableLayers) != 0)) return;
-            hookedGO = hit.transform.gameObject;
-            hookPosition = hit.point;
+            if (!(((1 << hits[0].transform.gameObject.layer) & hookableLayers) != 0)) return;
+            hookedGO = hits[0].transform.gameObject;
+            hookPosition = hits[0].point;
             PullTowardsHook(true);
             isHooked = true;
             lineRenderer.enabled = true;
